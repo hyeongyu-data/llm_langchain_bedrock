@@ -45,7 +45,7 @@ L llm/__init__.py             : bedrock 통신 모듈
         # 윈도우
         .\llm_venv\Scripts\activate
         # 맥
-        source llm_venv\bin\activate
+        source llm_venv/bin/activate
     ```
 - .gitignore 내용 세팅
     - 가상환경 배제

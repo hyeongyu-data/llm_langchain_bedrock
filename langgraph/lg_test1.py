@@ -1,13 +1,11 @@
 # 1. 모듈 가져오기
 from langgraph.graph import StateGraph, END
-#   공유 메모리의형태를 규정할때 활용
+#    공유 메모리의 형태를 규정할때 활용
 from typing import TypedDict
 
 # 2. 상태 정의, 데이터 저장할 그릇, 공유 메모리, 모든 노드에서 사용 가능
 '''
-[
 {"msg":"....."},
-]
 '''
 class CustomState(TypedDict):
     msg:str
@@ -39,3 +37,11 @@ workflow.set_entry_point("T1")  # 그래프 호출 진행되면 설정노드가 
 workflow.add_edge('T1','T2')    # T1 -> T2 규칙 지정(방향성)
 # 4-5. 끝점 설정
 workflow.add_edge("T2", END)    # T2가 수행이 끝나면 종료
+# 4-6. 컴파일 수행 -> Make -> 수행 가능한 형태로 완성
+app = workflow.compile()
+
+# 5. 데이터 주입(사용자의 질의 등..) -> 그래프 호출 -> 그래프를 순한하면서 요청에 대한 처리 수행
+#    데이터 형태 -> 공유메모리 참조하여 구성
+#    데이터 -> 노드 -> 노드 -> END(응답)
+res = app.invoke( { "msg": "랭그래프" } )
+print(res) # { "msg": "랭그래프" } -> {'msg': '헬로 랭그래프 !!'}
