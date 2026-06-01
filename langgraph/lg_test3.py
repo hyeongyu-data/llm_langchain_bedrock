@@ -1,5 +1,5 @@
 '''
-TOOL 사용, LLM 적용
+랭그래프 - 단기기억을 위해 메모리 추가
 '''
 # 1. 모듈 가져오기
 from langgraph.graph import StateGraph, END, MessagesState, START
@@ -11,6 +11,11 @@ from langgraph.prebuilt import ToolNode, tools_condition   # 툴 -> 노드로 �
 from dotenv import load_dotenv
 import os
 import boto3
+# 메모리 관련
+from langgraph.checkpoint.memory import MemorySaver # 단기기억용, 프로그램 종료되면 삭제
+
+# 2. 메모리 생성 -> 현재는 RAM에 저장, 실제는 => 물리적 백터디비
+memory = MemorySaver()
 
 # 2. 환경변수 로드
 load_dotenv()
@@ -73,11 +78,14 @@ workflow.add_edge('tools', 'chatbot') # tools -> chatbot
           -> 툴 -> 툴사용 -> 결과 -> chatbot -> llm 호출 -> 응답 -> end
 '''
 # 그래프 실행가능하게 구성 
-app = workflow.compile()
+# TODO 랭그래프 생성시 컴파일 옵션으로 단기기억 공간 제공
+app = workflow.compile(checkpointer=memory)
 
 
 # 테스트
 if __name__ == '__main__':
+    # TODO config 구성
+    config = {"configurable":{"thread_id":"user-1"}} # 사용자별로 기억관리, "user-1" 고정
     while True:
         # 1. 질의 획득
         user_input = input('\n유저: ').lower()
@@ -87,13 +95,7 @@ if __name__ == '__main__':
         prompt = { "messages":[ HumanMessage(content=user_input) ]  }
         print( prompt )
         # 4. 그래프 작동( invoke: 동기식, stream:비동기식 )
-        for evt in app.stream( prompt, stream_mode='values'):
+        # TODO config 세팅
+        for evt in app.stream( prompt, stream_mode='values', config=config):
             msg = evt['messages'][-1] # 마지막에 추가된 응답 내용
             print( "Agent", msg.content ) # 출력(실시간 계속 출력)
-
-'''
-openai.gpt-oss-120b-1:0 : LLM에서 직접 추론하여 응답. 도구 사용 x
-us.anthropic.claude-haiku-4-5-20251001-v1:0 : 도구 사용 했음. LLM 2회 추론 행위 있었음
-- 현재는 프럼프트 입력 => 새 채팅창 컨셉 => 단기 기억 x => 이전 대화 내용을 기억해서 프럼프트에 전달 x (이전 컨셉)
-- 메모리 적용 -> 같은 내용에 대해서 반복 작업 x
-'''
