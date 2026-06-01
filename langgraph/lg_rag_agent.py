@@ -44,14 +44,23 @@ tools = [ rag_search ]
 llm_with_tools = llm.bind_tools( tools )
 
 # 퓨샷 프롬프트 구성
-example         = []
-example_format  = ChatPromptTemplate.from_messages()
-few_shot_prompt = FewShotChatMessagePromptTemplate()
+examples        = [
+    {"input":"", "output":""},
+    {"input":"", "output":""},
+]
+example_prompt  = ChatPromptTemplate.from_messages(
+    ('human', '{input}'  ),
+    ('ai',    '{output}' ),
+)
+few_shot_prompt = FewShotChatMessagePromptTemplate(
+    examples    = examples,
+    example_prompt = example_prompt
+)
 final_prompt    = ChatPromptTemplate.format_messages([
     # 1. 페르소나
-    (),
+    ('system','당신은 센스 있는 식사 메뉴 추천 전문가입니다. 사용자의 상황에 맞춰서 메뉴를 추천하고, 필요하면 도구를 사용하여 실제 식당을 찾으세요.'),
     # 2. 퓨샷 샘플
     few_shot_prompt
     # 3. 사용자 질문
-    ()
+    ('human','{messages}')
 ])
