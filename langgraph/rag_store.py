@@ -25,3 +25,16 @@ data = [
     "가게명: 골든 스시, 메뉴: 초밥 세트, 우동, 특징: 고급스러움, 깔끔함, 월급날 추천, 가격: 25000원",
     "가게명: 해장국 천국, 메뉴: 뼈해장국, 순대국, 특징: 국물 진함, 비 오는 날 추천, 가격: 10000원"
 ]
+
+# 벡터화 -> 벡터디비 세팅
+vector_db = FAISS.from_texts( data, embedding=tokenizer)
+
+# 검색 함수 구성 : 질의 -> 벡터디비 쿼리 -> 유사도순 후보 전달, k개 구성
+def search_stores(query: str, k: int=2):
+    docs = vector_db.similarity_search( query, k )
+    print(f'===[RAG 검색 결과] : {docs}')
+    return "\n".join( [doc.page_content for doc in docs] )
+
+# 단위 테스트
+if __name__ == '__main__':
+    print( '유사도 기반 검색 ', search_stores("가벼운 식사") )
