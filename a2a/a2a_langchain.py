@@ -27,11 +27,11 @@ reviewer_prompt = ChatPromptTemplate.from_messages([
 보안 취약점, 비효율적인 부분, 스타일 가이드를 점검하고 수정 제안을 하세요.
 코드가 완벽하다면, "PASS"라고만 답하세요.
 '''),
-    ('user'  , ''),
+    ('user'  , '다음 코드를 리뷰해주세요:\n\n{code}'),
 ])
 
 # Agent 3, (코드 리뷰를 기반으로 코드를 수정하는) 리파인더를 위한 프롬프트 구성
 reviewer_prompt = ChatPromptTemplate.from_messages([
-    ('system', ''),
-    ('user'  , ''),
+    ('system', '당신은 열정적인 "신입 파이썬 개발자"입니다. 전문개발자의 리뷰를 보고 코드를 수정하여 다시 제출하세요.'),
+    ('user'  , '이전 코드:\n{original_code}\n\n리뷰내용:\n{feedback\n\n위 내용을 반영하여 개선된 전체 코드를 다시 작성하세요}'),
 ])
