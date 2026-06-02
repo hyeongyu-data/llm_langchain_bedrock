@@ -45,6 +45,29 @@ refiner_agent   = refiner_prompt   | llm | StrOutputParser()
 def run_agent_collaboration(topic):
     # 1. 목표 로그(프롬프트) 출력
     print(f'목표 : {topic}\n' + '='*50)
+
+    # 2. 신입 개발자 초안 작성
+    print(f'\n[신입 개발자] 코드 작성 중..')
+    draft_code = developer_agent.invoke({"request":topic})
+    print(f'--\n{draft_code}')
+
+    # 3. 전문 개발자 리뷰 작성
+    print(f'\n[전문 개발자] 코드 검토 중..')
+    feedback = reviewer_agent.invoke({"code":draft_code})
+    print(f'--\n{feedback}')
+
+    if feedback == 'PASS':
+        print(f'--[최종코드]--\n{draft_code}')
+    else:
+        print(f'--\n{feedback}')
+        # 4. 신입 개발자 피드백 반영
+        print(f'\n[신입 개발자] 피드백 반영하여 수정 중..')
+        final_code = refiner_agent.invoke({
+            "original_code":draft_code,
+            "feedback":feedback
+        })
+        print(f'--[최종코드]--\n{final_code}')
+
     pass
 
 # 구동
