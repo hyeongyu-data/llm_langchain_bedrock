@@ -66,6 +66,22 @@ class MCPClient:
 
     # MCP 서버에 존재하는 도구를 호출하는 함수
     async def call_tool(self, session, tool_name:str, arguments:dict):
+        try:
+            result = await session.call_tool(tool_name, arguments)
+            # 결과 출력
+            print(f'결과 출력 : {result}')
+            if hasattr(result, 'content') and result.content:
+                for content in result.content:
+                    if hasattr(content, 'text'):
+                        print(f" 결과 : \n{content.text}\n")
+                    else:
+                        print(f" 결과 : \n{content}\n")
+            else:
+                print(f" 결과 : \n{result}\n")
+            return result
+        except Exception as e:
+            print(f'에러 발생 {e}')
+            raise
         pass
 
 # 3. 비동기 main 함수 구성
