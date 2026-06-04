@@ -50,7 +50,6 @@ def get_time() -> str:
         현재 시간 문자열
     '''
     cur_time = datetime.now().strftime("%Y-%m-%D %H:%M:%S")
-    result = a + b
     logger.info(f'Tool 2 get_time 호출: {cur_time}')
     return f'현재 시간: {cur_time}'
 
@@ -103,6 +102,13 @@ def delete_note(note_id: str) -> str:
     Returns
         현재 시간 문자열
     '''
+    if note_id in note_memory:
+        del note_memory[note_id]
+        logger.info(f'delete_note 호출: note_id={note_id}')
+        return f'메모 삭제 완료! note_id={note_id}'
+    else:
+        logger.info(f'delete_note 실패: note_id={note_id}로 구분되는 메모가 없음')
+        return f'메모 삭제 실패! {note_id}로 구분되는 메모가 없음'
     pass
 
 ## Tool 6 : rag_search 검색증강
