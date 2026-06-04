@@ -13,7 +13,7 @@ from mcp.client.stdio import stdio_client # 입력, 출력을 가진 클라이�
 class MCPClient:
     '''MCP Server와 통신하는 클레스(역활:클라이언트)'''
     # 생성자
-    def __init__(self, server_script: str = 'mcp/server.py'):
+    def __init__(self, server_script: str = 'server.py'):
         '''
         Args:
             server_script: 실행할 Server측 스크립트 경로
@@ -37,6 +37,13 @@ class MCPClient:
             async with stdio_client(server_params) as (read, write):
                 async with ClientSession(read, write) as session:
                     print(f'MCP 서버 연결 성공 : 서버측으로부터 입력, 출력에 대한 객체 획득')
+                    # 1. 세션 초기화
+                    await session.initialize()
+                    # 2. 사용 가능한 모든 도구 조회
+                    print(f'MCP 서버측에 도구 목록 요청')
+                    res = await session.list_tools()
+                    self.tools = res.tools
+                    print(f'{len(self.tools)}개의 도구 확인됨.',self.tools[0])
 
 
         except Exception as e:
