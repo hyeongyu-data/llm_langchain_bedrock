@@ -13,7 +13,7 @@ from mcp.client.stdio import stdio_client # 입력, 출력을 가진 클라이�
 class MCPClient:
     '''MCP Server와 통신하는 클레스(역활:클라이언트)'''
     # 생성자
-    def __init__(self, server_script: str = 'server.py'):
+    def __init__(self, server_script: str = 'mcp/server.py'):
         '''
         Args:
             server_script: 실행할 Server측 스크립트 경로
