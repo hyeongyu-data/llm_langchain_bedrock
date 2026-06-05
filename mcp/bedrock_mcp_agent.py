@@ -139,14 +139,23 @@ class BedrockMCPAgent:
             msg = f'\n 메세지 처리중 에러 발생{e}'
             print(msg)
             return msg
+    
     # 메모리 정리(뒷정리)
     pass
 
 # 4. 메인함수
 async def main():
     # BedrockMCPAgent 에이전트 생성
-    # 사용자 입력 대기(프럼프트 입력 대기) -> 무한루프? 1회성?
-    # BedrockMCPAgent 에이전트의 `사용자 요청 처리` 함수 호출
+    agent = BedrockMCPAgent()
+    try: # MCP 서버 연동 -> I/O -> 예외사항
+        agent.initialize()
+        # 사용자 입력 대기(프럼프트 입력 대기) -> 무한루프? 1회성?
+        query = input('\n프롬프트 입력: ').strip()
+        # BedrockMCPAgent 에이전트의 `사용자 요청 처리` 함수 호출
+        if query:
+            await agent.process_query(query)
+    except Exception as e:
+        print(f'main() 오류발생 {e}')
     pass
 
 # 5. 서비스가동
